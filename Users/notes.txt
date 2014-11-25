@@ -1,0 +1,26 @@
+## 2014-11-25
+## add a domain user account to local "admin" group so they can run sudo command
+dseditgroup -o edit -a cmosetick -t user admin
+
+
+## 2014-07-02
+## Create a user account on Mac OS X that does not show up in user list:
+## This has been tested on 10.9, Mavericks
+## First, we’ll create a new entry for the user under /Users:
+dscl . create /Users/gituser
+Next, create and set the shell property to bash:
+dscl . create /Users/gituser UserShell /usr/local/bin/zsh
+## create and set a unique ID for the user. Pick whatever works for you here, ensuring that it hasn’t been used by previous users:
+dscl . create /Users/gituser UniqueID 599
+## Next, we’ll create and set the user’s group ID property:
+dscl . create /Users/gituser PrimaryGroupID 20
+## Now, we’ll set the user’s home directory by running the following command.
+## Ensure that you replace both instances of the shortname in the command below:
+dscl . create /Users/gituser NFSHomeDirectory /Local/Users/gituser
+## NOTE - I did not set a password, as I only want to able to access this account via sudo command
+## add some security to the user account and set their password.
+## Here, you’ll replace "PASSWORD" with the actual password that will be used initially for their account.
+## The user can always change the password later:
+dscl . passwd /Users/gituser PASSWORD
+## Reference:
+## http://www.maclife.com/article/columns/terminal_101_creating_new_users
