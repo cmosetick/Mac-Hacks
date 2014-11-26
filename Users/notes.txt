@@ -2,6 +2,9 @@
 ## add a domain user account to local "admin" group so they can run sudo command
 dseditgroup -o edit -a cmosetick -t user admin
 
+## disable the Mac console login screen, screen saver from starting and consuming resources
+sudo defaults write /Library/Preferences/com.apple.screensaver loginWindowIdleTime 0
+
 
 ## 2014-07-02
 ## Create a user account on Mac OS X that does not show up in user list:
