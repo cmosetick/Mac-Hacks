@@ -17,6 +17,11 @@ To actually use a ZFS disk as a local backup target, we will have to trick OS X 
 - Use the newest Mac installer from here:  
 [https://openzfsonosx.org/](https://openzfsonosx.org)
 
+- or install via Mac [Homebrew](http://brew.sh) (check to make sure Homebrew is up to date first)
+`brew search zfs`  
+Should return something like:  
+`Caskroom/cask/openzfs`
+
 
 ## Set up the disk with ZFS
 
