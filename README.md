@@ -6,3 +6,6 @@
 
 ## Users
 	This holds notes about creating or manipulating user accounts on Mac OS X.
+
+## FileSystems
+	This holds notes related to Mac OS X file system tweaks and hacks.
