@@ -17,8 +17,7 @@ To actually use a ZFS disk as a local backup target, we will have to trick OS X 
 - Use the newest Mac installer from here:  
 [https://openzfsonosx.org/](https://openzfsonosx.org)
 
-- or install via Mac [Homebrew](http://brew.sh) (check to make sure Homebrew is up to date first)
-`brew search zfs`  
+- or install via Mac [Homebrew](http://brew.sh) (check to make sure Homebrew is up to date first)  `brew search zfs`  
 Should return something like:  
 `Caskroom/cask/openzfs`
 
@@ -70,6 +69,23 @@ set the sparse bundle as a Time Machine backup destination.
 sudo tmutil setdestination '/Volumes/TimeMachine'
 ```
 now open Time Machine in system preferences, and you should see the disk "TimeMachine" as the backup target.
+
+## Unmounting the disk
+The disk will show up on your desktop, but can not be ejected using the right click context menu.
+
+- Run the `export` command to unmount the disk.  
+- Note that you do not need to use sudo for the export.  
+- IMPORTANT - That will unmount all ZFS fs' on the disk, not just the Time Machine fs.
+- Then remove power or data cable from the disk.  
+```
+zpool export mypool
+Running process: '/usr/sbin/diskutil' 'unmount' '/Volumes/mypool/timemachine'
+Unmount successful for /Volumes/scraper/timemachine
+```
+
+## Re-connect the disk
+
+
 
 ## Credits
 Big thank you's have to go to all those who have helped to bring ZFS to all the platforms outside of Solaris.  
