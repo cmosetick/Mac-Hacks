@@ -1,17 +1,21 @@
-# Using a local ZFS disk as a Mac OS X Time Machine backup target
-### 2014-12-11
-by: Chris Mosetick
+# Using ZFS as a Mac OS X Time Machine backup target
+### 2015-09-26
+Updated by: Phlogi
+Original by: Chris Mosetick
 
 ## Introduction
 The merits of using ZFS as a backup target are too many to list here.
 OS X will not _natively_ use anything other than a HFS+ disk for Time Machine backup.
 For now, I'll just say that using ZFS is much better than using Apple's [ancient HFS+](http://blog.barthe.ph/2014/06/10/hfs-plus-bit-rot/).
 
-To actually use a ZFS disk as a local backup target, we will have to trick OS X into thinking that a ZFS disk is actually a HFS+ disk. In short, we run HFS+ on top of ZFS. Less than ideal, but it works.
+To actually use a ZFS pool as a local backup target, the easiest way is to use a virtual block device from our zfs pool. This is a native feature of ZFS. 
+
+
+we will have to trick OS X into thinking that a ZFS disk is actually a HFS+ disk. In short, we run HFS+ on top of ZFS. Less than ideal, but it works.
 
 
 ## Requirements
-- create a sparse bundle on a ZFS disk to be used for "TimeMachine" backup
+- create a virtual block device on your pool and let OS X format it with HFS
 
 - The disk runs ZFS on bare metal.  
 - Use the newest Mac installer from here:  
@@ -35,56 +39,13 @@ Optional: store two copies of every disk block, twice. Will reduce storage space
 ```
 ## zfs set copies=2 mypool
 ```
-create some file systems on your new disk for general usage if wanted.
+create the virtual block device
 ```
-zfs create mypool/tmp
-zfs create mypool/chris
+zfs create fs create -V 256GB mypool/vdevOSXbackup
 ```
-create a FS for Time Machine usage
-```
-zfs create mypool/timemachine
-```
+Now OS X will detect the new disk and ask to initialize it - somply hit that button, choose a name for the partition and format as HFS+.
 
-## Create the sparse bundle for TM usage
-
-create a sparse bundle with HFS+ Journaled file system.  
-set the label of the disk to 'TimeMachine' (so it makes sense in Finder).  
-change the -volname (label as appears on the desktop) to whatever makes you happy.
-change the -size to whatever you want / need for your setup.
-```
-cd /Volumes/mypool/timemachine
-hdiutil create -size 600g -type SPARSEBUNDLE -fs "HFS+J" -volname TimeMachine TimeMachine.sparsebundle
-```
-
-the open command will mount the sparse bundle
-```
-open TimeMachine.sparsebundle
-```
-enable "special" ownership
-```
-sudo diskutil enableOwnership /Volumes/TimeMachine
-```
-set the sparse bundle as a Time Machine backup destination.
-```
-sudo tmutil setdestination '/Volumes/TimeMachine'
-```
-now open Time Machine in system preferences, and you should see the disk "TimeMachine" as the backup target.
-
-## Unmounting the disk
-The disk will show up on your desktop, but can not be ejected using the right click context menu.
-
-- Run the `export` command to unmount the disk.  
-- Note that you do not need to use sudo for the export.  
-- IMPORTANT - That will unmount all ZFS fs' on the disk, not just the Time Machine fs.
-- Then remove power or data cable from the disk.  
-```
-zpool export mypool
-Running process: '/usr/sbin/diskutil' 'unmount' '/Volumes/mypool/timemachine'
-Unmount successful for /Volumes/scraper/timemachine
-```
-
-## Re-connect the disk
-
+After that timemachine might popup immediately and let you select the disk, otherwise select it manually from within TimeMachine (open Time Machine in system preferences and you should see the disk as you named it when initializing it with DiskUtil).
 
 
 ## Credits
